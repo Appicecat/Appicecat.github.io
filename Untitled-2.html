@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knight's Light Puzzle</title>
+<style>
+  .cell {
+    width: 50px;
+    height: 50px;
+    border: 2px solid black;
+    display: inline-block;
+    margin: 5px; /* 添加空间 */
+    padding: 0;
+    background-color: white;
+    border-radius: 50%; /* 将方块变成圆形 */
+  }
+</style>
+</head>
+<body>
+<h1>Knight's Light Puzzle</h1>
+<label for="rows">Rows:</label>
+<input type="number" id="rows" name="rows" min="1" max="10" value="5">
+<label for="cols">Columns:</label>
+<input type="number" id="cols" name="cols" min="1" max="10" value="5">
+<button onclick="createBoard()">Create Board</button>
+<button onclick="resetBoard()">Reset Board</button>
+<div id="board"></div>
+<script>
+  let board = [];
+
+  function createBoard() {
+    const rows = parseInt(document.getElementById('rows').value);
+    const cols = parseInt(document.getElementById('cols').value);
+
+    const boardDiv = document.getElementById('board');
+    boardDiv.innerHTML = '';
+
+    for (let i = 0; i < rows; i++) {
+      const row = [];
+      for (let j = 0; j < cols; j++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.row = i;
+        cell.dataset.col = j;
+        cell.addEventListener('click', () => pressLight(i, j));
+        boardDiv.appendChild(cell);
+        row.push(0);
+      }
+      board.push(row);
+      boardDiv.appendChild(document.createElement('br'));
+    }
+  }
+
+  function resetBoard() {
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        board[i][j] = 0;
+      }
+    }
+    updateBoard();
+  }
+
+  function pressLight(row, col) {
+    board[row][col] = 1 - board[row][col];  // 切换灯光状态
+
+    // 骑士走法的八个方向
+    const moves = [
+      [-2, -1], [-2, 1],
+      [-1, -2], [-1, 2],
+      [1, -2], [1, 2],
+      [2, -1], [2, 1]
+    ];
+
+    for (const move of moves) {
+      const newRow = row + move[0];
+      const newCol = col + move[1];
+      if (newRow >= 0 && newRow < board.length && newCol >= 0 && newCol < board[0].length) {
+        board[newRow][newCol] = 1 - board[newRow][newCol];
+      }
+    }
+
+    updateBoard();
+  }
+
+  function updateBoard() {
+    const cells = document.getElementsByClassName('cell');
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      const row = parseInt(cell.dataset.row);
+      const col = parseInt(cell.dataset.col);
+      cell.style.backgroundColor = board[row][col] === 0 ? 'white' : 'yellow';
+    }
+  }
+</script>
+</body>
+</html>
